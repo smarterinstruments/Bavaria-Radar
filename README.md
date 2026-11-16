@@ -4,6 +4,7 @@
 
 **Semiconductor Value Chain Radar – Bavaria.** Weekly radar of public activities of companies and institutes in the Bavarian semiconductor ecosystem, prepared by the Czech National Semiconductor Cluster (CNSC) as a preview for alignment with Bavarian partners (Bavarian Chips Alliance / Bayern Innovativ). Structure and tooling follow the Saxony Radar.
 
+- Live (GitHub Pages): https://smarterinstruments.github.io/Bavaria-Radar/
 - Seite / page: `index.html` (Sprachen: DE, EN, CZ)
 - Daten / data: `data/radar_by.json`; Tabelle / spreadsheet: `data/Bavaria_Radar_W46_2026-11-16.xlsx` (Overview, Organisations, Events, Sources, Taxonomy, Notes)
 - Recherche-Rohdaten / research inputs (CNSC, Czech): `data/cnsc_research_organisations.json` (142 Organisationen mit Kurzprofil, Produkten und Wirtschaftsdaten), `data/cnsc_research_events.json` (120 Ereignisse mit Quelle), `data/translations_de_en.json` (DE/EN-Fassungen der Kurzprofile und Meldungen), `data/bca_membership_ipcei.json` (Zuordnung zum BCA-Kompetenzatlas und IPCEI-Beteiligung mit Quellen)
