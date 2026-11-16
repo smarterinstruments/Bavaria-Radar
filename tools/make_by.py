@@ -17,6 +17,7 @@ def short_by(n):
 rows=json.load(open('data/cnsc_research_organisations.json')); events=json.load(open('data/cnsc_research_events.json'))
 TR=json.load(open('data/translations_de_en.json')); TP,TE=TR['profiles'],TR['events']; TN=TR.get('notes',{})
 TODAY=datetime.date(2026,11,16)
+YTC=json.load(open('data/youtube_channels.json')); YTN=json.load(open('data/youtube_items.json'))
 BI=json.load(open('data/bca_membership_ipcei.json')); BCA=BI['bca']; IPC=BI['ipcei']; BSRC=BI['_sources']
 IPU={'ME/CT':BSRC['ipcei_mect']['url'],'ME':BSRC['ipcei_me']['url']}
 # ---- economics value normalisation (light; numbers stay as given)
@@ -67,6 +68,7 @@ for r in rows:
     for cz_,de_,en_ in NAME_TR:
         if cz_ in m['n']:
             m['nn']={'cs':m['n'],'de':m['n'].replace(cz_,de_),'en':m['n'].replace(cz_,en_)}; break
+    if i in YTC: m['yt']=YTC[i]['yt']
     b=BCA.get(i)
     m['bca']=b['c'] if b else ''
     m['bcaAs']=b['as'] if b else ''
@@ -96,6 +98,9 @@ for v in events:
     if mid not in byid: print('event member missing',v['name']); continue
     t=TE[v['eid']]
     N.append({"d":v['date'],"a":False,"m":[mid],"ty":ntype(v['type']),"src":skind(v['stype']),"top":v['eid'] in TOP,"cs":v['text'],"en":t['en'],"de":t['de'],"u":v['url1'],"sn":v['sname'],"tyraw":v['type']})
+for y in YTN:
+    for mid in y['m']: assert mid in byid, mid
+    N.append({"d":y['d'],"a":False,"m":y['m'],"ty":y['ty'],"src":"youtube","top":bool(y.get('top')),"cs":y['cs'],"en":y['en'],"de":y['de'],"u":"https://www.youtube.com/watch?v="+y['v'],"sn":"YouTube","tyraw":"youtube","yid":y['id']})
 N.sort(key=lambda n:n['d'],reverse=True)
 # ---- Termine (upcoming, taken from the event texts)
 def M(prefix):
@@ -127,13 +132,14 @@ meta.update({"edition":"W46/2026","updated":"2026-11-16",
  "lede":{"cs":"Co firmy a instituce bavorského polovodičového ekosystému zveřejňují, od návrhu čipů přes zařízení, subsystémy a materiály po výrobu, výzkum a distribuci – doplněno o základní ekonomické údaje. Seznam organizací a jejich zařazení do taxonomie CNSC vychází z rešerše CNSC ve veřejných zdrojích a je pracovní.",
   "en":"What companies and institutes in the Bavarian semiconductor ecosystem publish, from chip design through equipment, subsystems and materials to fabrication, research and distribution – with basic economic data. The organisation list and its classification into the CNSC taxonomy come from CNSC research in public sources and are provisional.",
   "de":"Was Unternehmen und Institute des bayerischen Halbleiter-Ökosystems veröffentlichen, vom Chipdesign über Anlagen, Subsysteme und Materialien bis zu Fertigung, Forschung und Distribution – ergänzt um wirtschaftliche Eckdaten. Die Liste der Organisationen und ihre Zuordnung zur CNSC-Taxonomie stammen aus CNSC-Recherchen in öffentlichen Quellen und sind vorläufig."},
- "banner":{"cs":f"Pracovní náhled, edice W46/2026 (16. 11. 2026). {len(members)} organizací z rešerše CNSC ({n_prof} s firemním profilem, {n_eco} s ekonomickými údaji, {n_bca} v Kompetenzatlasu Bavarian Chips Alliance – z toho {n_bcap} partnerů, {n_ipc} s účastí v IPCEI ME/ME-CT), {len(N)} záznamů aktivit za říjen–listopad 2026 ze {doms} veřejných zdrojů (firemní newsroomy, veletrhy electronica a SEMICON Europa 2026). Neveřejná pracovní verze, zařazení čeká na ověření s bavorskými partnery.",
-  "en":f"Working preview, edition W46/2026 (16 Nov 2026). {len(members)} organisations from CNSC research ({n_prof} with a company profile, {n_eco} with economic data, {n_bca} in the Bavarian Chips Alliance competence map – {n_bcap} of them partners, {n_ipc} with IPCEI ME/ME-CT participation), {len(N)} activity items for October–November 2026 from {doms} public sources (company newsrooms, the electronica and SEMICON Europa 2026 trade fairs). Non-public working version; classification awaits review with Bavarian partners.",
-  "de":f"Arbeitsvorschau, Ausgabe W46/2026 (16. 11. 2026). {len(members)} Organisationen aus CNSC-Recherche ({n_prof} mit Unternehmensprofil, {n_eco} mit Wirtschaftsdaten, {n_bca} im Kompetenzatlas der Bavarian Chips Alliance – davon {n_bcap} Partner, {n_ipc} mit IPCEI-ME/ME-KT-Beteiligung), {len(N)} Aktivitätseinträge für Oktober–November 2026 aus {doms} öffentlichen Quellen (Unternehmens-Newsrooms, Messen electronica und SEMICON Europa 2026). Nicht öffentliche Arbeitsversion; die Zuordnung wartet auf die Prüfung mit bayerischen Partnern."}})
+ "banner":{"cs":f"Pracovní náhled, edice W46/2026 (16. 11. 2026). {len(members)} organizací z rešerše CNSC ({n_prof} s firemním profilem, {n_eco} s ekonomickými údaji, {n_bca} v Kompetenzatlasu Bavarian Chips Alliance – z toho {n_bcap} partnerů, {n_ipc} s účastí v IPCEI ME/ME-CT), {len(N)} záznamů aktivit za říjen–listopad 2026 ze {doms} veřejných zdrojů (firemní newsroomy, veletrhy electronica a SEMICON Europa 2026, YouTube kanály 23 organizací). Neveřejná pracovní verze, zařazení čeká na ověření s bavorskými partnery.",
+  "en":f"Working preview, edition W46/2026 (16 Nov 2026). {len(members)} organisations from CNSC research ({n_prof} with a company profile, {n_eco} with economic data, {n_bca} in the Bavarian Chips Alliance competence map – {n_bcap} of them partners, {n_ipc} with IPCEI ME/ME-CT participation), {len(N)} activity items for October–November 2026 from {doms} public sources (company newsrooms, the electronica and SEMICON Europa 2026 trade fairs, YouTube channels of 23 organisations). Non-public working version; classification awaits review with Bavarian partners.",
+  "de":f"Arbeitsvorschau, Ausgabe W46/2026 (16. 11. 2026). {len(members)} Organisationen aus CNSC-Recherche ({n_prof} mit Unternehmensprofil, {n_eco} mit Wirtschaftsdaten, {n_bca} im Kompetenzatlas der Bavarian Chips Alliance – davon {n_bcap} Partner, {n_ipc} mit IPCEI-ME/ME-KT-Beteiligung), {len(N)} Aktivitätseinträge für Oktober–November 2026 aus {doms} öffentlichen Quellen (Unternehmens-Newsrooms, Messen electronica und SEMICON Europa 2026, YouTube-Kanäle von 23 Organisationen). Nicht öffentliche Arbeitsversion; die Zuordnung wartet auf die Prüfung mit bayerischen Partnern."}})
 src=[["CNSC-Recherche in öffentlichen Quellen / rešerše CNSC (Unternehmenswebsites, Presse, Register), 5 Chargen, 16. 11. 2026","https://www.semicz.cz"],
 ["Wirtschaftsdaten: Geschäftsberichte, 10-K/IR-Veröffentlichungen, Bundesanzeiger, Handelsregister (4 Chargen, 16. 11. 2026) / ekonomika: výroční zprávy, rejstříky","https://www.bundesanzeiger.de"],
 ["Unternehmens-Newsrooms und Pressemitteilungen (öffentlich) / firemní newsroomy – Direktlinks bei jeder Meldung","https://www.semicz.cz"],
 ["electronica 2026 und SEMICON Europa 2026, München, 10.–13. 11. 2026 (Aussteller- und Programmseiten) / veletrhy","https://electronica.de"],
+["Offizielle YouTube-Kanäle von 23 Organisationen (öffentliche RSS-Feeds, Videos der letzten 31 Tage; Kanalliste aus CNSC-Recherche vom 16. 11. 2026) / oficiální YouTube kanály","https://www.youtube.com"],
 [BSRC['bca']['name']+" / Kompetenzatlas BCA – klasifikace členství",BSRC['bca']['url']],
 [BSRC['ipcei_mect']['name']+" / seznam německých účastníků IPCEI ME/CT",BSRC['ipcei_mect']['url']],
 [BSRC['ipcei_karte']['name'],BSRC['ipcei_karte']['url']],

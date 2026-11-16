@@ -368,6 +368,37 @@ T=T.replace(OLD_GEO,"const W = 1500, H = 1010, C = W / 2, CY = 500, R = [0, 282,
 OLD_MAXL="const MAXL = 56;"
 assert T.count(OLD_MAXL)==1
 T=T.replace(OLD_MAXL,"const MAXL = Infinity;",1)
+# ---- time-zone readout: the mouse position over the radar is translated into "ring / week back / days ago" in the top-left corner
+OLD_TIP="  const tip = $('tip'), box = $('radarSvg');"
+assert T.count(OLD_TIP)==1
+ZONE_JS=r"""  const tip = $('tip'), box = $('radarSvg');
+  (() => {
+    const svgEl = box.querySelector('svg'); if (!svgEl) return;
+    const zone = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    zone.setAttribute('x', 12); zone.setAttribute('y', 26); zone.setAttribute('font-size', 15); zone.setAttribute('font-weight', 600); zone.setAttribute('fill', '#c9d1dc'); zone.setAttribute('font-family', 'Inter,sans-serif'); zone.setAttribute('pointer-events', 'none');
+    svgEl.appendChild(zone);
+    const upd = new Date(D.meta.updated + 'T12:00:00');
+    const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const fd = dt => LANG === 'en' ? `${dt.getDate()} ${MON[dt.getMonth()]}` : `${dt.getDate()}. ${dt.getMonth() + 1}.`;
+    const ago = n => { const x = new Date(upd); x.setDate(x.getDate() - n); return x; };
+    const ZT = {cs:{r1:'Prstenec 1 · posledních 7 dní', r2:(w,d)=>`Prstenec 2 · ${w}. týden zpět · ≈ před ${d} dny`, out:'mimo prstence · bez aktivity za posledních 31 dní'},
+                en:{r1:'Ring 1 · last 7 days', r2:(w,d)=>`Ring 2 · week ${w} back · ≈ ${d} days ago`, out:'outside the rings · no activity in the last 31 days'},
+                de:{r1:'Ring 1 · letzte 7 Tage', r2:(w,d)=>`Ring 2 · Woche ${w} zurück · ≈ vor ${d} Tagen`, out:'außerhalb der Ringe · keine Aktivität in den letzten 31 Tagen'}};
+    const zt = ZT[LANG] || ZT.de;
+    svgEl.addEventListener('mousemove', e => {
+      const pt = svgEl.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+      const ctm = svgEl.getScreenCTM(); if (!ctm) return;
+      const q = pt.matrixTransform(ctm.inverse());
+      const r = Math.hypot(q.x - C, q.y - CY);
+      let s;
+      if (r <= R[1]) s = `${zt.r1} (${fd(ago(6))} – ${fd(upd)})`;
+      else if (r <= R[2]) { const day = Math.round(8 + (r - R[1]) / (R[2] - R[1]) * 23); const w = Math.min(5, Math.ceil(day / 7)); s = `${zt.r2(w, day)} (${fd(ago(w * 7 - 1))} – ${fd(ago((w - 1) * 7))})`; }
+      else s = zt.out;
+      zone.textContent = s;
+    });
+    svgEl.addEventListener('mouseleave', () => { zone.textContent = ''; });
+  })();"""
+T=T.replace(OLD_TIP,ZONE_JS,1)
 assert 'renderMap();' in T and 'id="p-map"' in T and "'map','news'" in T
 html=T.replace('/*__DATA__*/',body)
 open('index.html','w',encoding='utf-8').write(html)
