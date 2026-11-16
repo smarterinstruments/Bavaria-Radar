@@ -305,6 +305,14 @@ function bcaChip(m){const t=BCAT[LANG]||BCAT.de;const c=m.bca||'none';const via=
 T=T.replace("function renderAll() {",BCA_JS+"function renderAll() {",1)
 T=T.replace("</style>",".chip.bca-partner{color:var(--text);border:1px solid var(--accent,#2563eb);background:transparent}.chip.bca-listed{color:var(--muted);border:1px solid var(--muted);background:transparent}.chip.bca-operator{color:var(--text);border:1px solid var(--accent,#2563eb);background:var(--accent-bg,rgba(37,99,235,.08))}\n</style>",1)
 assert 'bcaChip(m)' in T and 'function bcaChip' in T
+# ---- research note per language (CZ original, DE/EN translations)
+OLD_NOTE="(m.note ? `<div class=\"note\">${esc(m.note)}</div>` : '')"
+assert T.count(OLD_NOTE)==1
+T=T.replace(OLD_NOTE,"(m.note ? `<div class=\"note\">${esc(L({cs:m.note,en:m.noteEn||m.note,de:m.noteDe||m.note}))}</div>` : '')",1)
+# ---- organisation name per language (Czech research parentheticals translated)
+OLD_RA="function renderAll() { renderStatic();"
+assert T.count(OLD_RA)==1, T.count(OLD_RA)
+T=T.replace(OLD_RA,"function renderAll() { D.members.forEach(m=>{ if(m.nn) m.n=m.nn[LANG]||m.nn.de||m.n; }); renderStatic();",1)
 assert 'renderMap();' in T and 'id="p-map"' in T and "'map','news'" in T
 html=T.replace('/*__DATA__*/',body)
 open('index.html','w',encoding='utf-8').write(html)

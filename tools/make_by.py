@@ -15,16 +15,23 @@ def short_by(n):
         if n.startswith(k): return v
     return short(n)
 rows=json.load(open('data/cnsc_research_organisations.json')); events=json.load(open('data/cnsc_research_events.json'))
-TR=json.load(open('data/translations_de_en.json')); TP,TE=TR['profiles'],TR['events']
+TR=json.load(open('data/translations_de_en.json')); TP,TE=TR['profiles'],TR['events']; TN=TR.get('notes',{})
 TODAY=datetime.date(2026,11,16)
 BI=json.load(open('data/bca_membership_ipcei.json')); BCA=BI['bca']; IPC=BI['ipcei']; BSRC=BI['_sources']
 IPU={'ME/CT':BSRC['ipcei_mect']['url'],'ME':BSRC['ipcei_me']['url']}
 # ---- economics value normalisation (light; numbers stay as given)
 REP={'de':[('Veřejně obchodovaná','Börsennotierte'),('veřejně obchodovaná','börsennotierte'),('dceriná spol.','Tochtergesellschaft'),('Dceřiná spol.','Tochtergesellschaft'),('dceřiná spol.','Tochtergesellschaft'),('Dceřiná společnost','Tochtergesellschaft'),('dceřiná společnost','Tochtergesellschaft'),('Nezávislá soukromá','Unabhängige private'),('soukromá společnost','Privatunternehmen'),('soukromá','privat'),('Veřejnoprávní výzkumný ústav','Öffentlich-rechtliches Forschungsinstitut'),('Veřejná univerzita','Staatliche Universität'),('Svobodný stát Bavorsko','Freistaat Bayern'),('neveřejná AG','nicht börsennotierte AG'),('rodinné / zakladatelské vlastnictví','Familien-/Gründerbesitz'),('rodinné','Familienbesitz'),('Součást','Teil von'),('součást','Teil von'),('Divize','Sparte'),('divize','Sparte'),('skupina','Gruppe'),('skupiny','Gruppe'),('Privátní/institucionální investoři','Private/institutionelle Investoren'),('kotovaná','börsennotiert'),('Mittelstand','Mittelstand'),('globálně','weltweit'),('celosvětově','weltweit'),('lokálně','lokal'),('odhad','Schätzung'),('rozpočet','Budget'),('mil. ','Mio. '),('mld. ','Mrd. '),('tis. ','Tsd. '),('cca ','ca. '),('Mnichov','München'),('Řezno','Regensburg'),('Norimberk','Nürnberg'),('Bavorsko','Bayern'),('v DE','in DE'),('zaměstnanců','Beschäftigte'),('zaměstnanci','Beschäftigte'),('Firemní web','Firmenwebsite'),('Firemní zdroje','Unternehmensangaben'),('Rejstřík','Handelsregister'),('výroční zpráva','Geschäftsbericht'),('Výroční zpráva','Geschäftsbericht')],
 'en':[('Veřejně obchodovaná','Listed'),('veřejně obchodovaná','listed'),('dceriná spol.','subsidiary'),('Dceřiná spol.','Subsidiary'),('dceřiná spol.','subsidiary'),('Dceřiná společnost','Subsidiary'),('dceřiná společnost','subsidiary'),('Nezávislá soukromá','Independent private'),('soukromá společnost','private company'),('soukromá','private'),('Veřejnoprávní výzkumný ústav','Public research institute'),('Veřejná univerzita','Public university'),('Svobodný stát Bavorsko','Free State of Bavaria'),('neveřejná AG','unlisted AG'),('rodinné / zakladatelské vlastnictví','family/founder owned'),('rodinné','family-owned'),('Součást','Part of'),('součást','part of'),('Divize','Division'),('divize','division'),('skupina','group'),('skupiny','group'),('Privátní/institucionální investoři','Private/institutional investors'),('kotovaná','listed'),('Mittelstand','Mittelstand'),('globálně','global'),('celosvětově','global'),('lokálně','local'),('odhad','estimate'),('rozpočet','budget'),('mil. ','million '),('mld. ','billion '),('tis. ','k '),('cca ','approx. '),('Mnichov','Munich'),('Řezno','Regensburg'),('Norimberk','Nuremberg'),('Bavorsko','Bavaria'),('v DE','in DE'),('zaměstnanců','employees'),('zaměstnanci','employees'),('Firemní web','company website'),('Firemní zdroje','company sources'),('Rejstřík','register'),('výroční zpráva','annual report'),('Výroční zpráva','Annual report')]}
+import re as _re
+EXTRA={'de':[('Divize Siemens AG','Sparte der Siemens AG'),('R&D centrum','F&E-Zentrum'),('DE podpora','DE Support'),('Rodina ','Familie '),('Hongkong / Singapur','Hongkong / Singapur'),('semicon R&D','Halbleiter-F&E')],
+       'en':[('Divize Siemens AG','Division of Siemens AG'),('R&D centrum','R&D centre'),('DE podpora','DE support'),('Hongkong / Singapur','Hong Kong / Singapore'),('semicon R&D','semiconductor R&D')]}
 def tr_val(s,lang):
     if not s: return ''
-    for a,b in REP[lang]: s=s.replace(a,b)
+    s=s.strip()
+    full=TR.get('eco',{}).get(s,{}).get(lang)
+    if full: return full
+    for a,b in EXTRA[lang]+REP[lang]: s=s.replace(a,b)
+    if lang=='en': s=_re.sub(r'Rodina (\S+)',r'\1 family',s)
     return s
 def rel_of(s):
     s=(s or '').lower()
@@ -48,14 +55,18 @@ for r in rows:
     t=TP.get(i,{})
     de_p,de_s=(t.get('de',{}).get('p',''),t.get('de',{}).get('s','')) if t else ('','')
     en_p,en_s=(t.get('en',{}).get('p',''),t.get('en',{}).get('s','')) if t else ('','')
-    city,cc=place(r['city'],'')
+    city,cc=place(re.sub(r'\s+u\s+(Mnichova|Freisingu|Norimberka|Řezna|Augsburgu)\b','',r['city'] or ''),'')
     eco=None
     if r.get('legal') or r.get('rev') or r.get('emp_by'):
         eco={'legal':{'cs':r['legal'],'de':tr_val(r['legal'],'de'),'en':tr_val(r['legal'],'en')},'emp_by':{'cs':r['emp_by'],'de':tr_val(r['emp_by'],'de'),'en':tr_val(r['emp_by'],'en')},'emp_g':{'cs':r['emp_g'],'de':tr_val(r['emp_g'],'de'),'en':tr_val(r['emp_g'],'en')},'rev':{'cs':r['rev'],'de':tr_val(r['rev'],'de'),'en':tr_val(r['rev'],'en')},'rel':rel_of(r['rel']),'relraw':r['rel'],'note':r['enote']}
     conf={'high':'high','to verify':'to verify','medium':'to verify','uncertain':'uncertain'}.get((r['conf'] or '').lower(),'to verify' if not r['profile'] else 'high')
     m={"id":i,"n":r['name'],"short":short_by(r['name']),"city":city,"cc":cc,"url":url(r['web']),"s":sec,"acadChip":False,"partnerIn":[],
        "cs":card(code,cs_n,r['profile'],r['products'],'Produkty a služby'),"en":card(code,en_n,en_p or r['profile'],en_s or r['products'],'Products and services'),"de":card(code,DE_CODE.get(code,en_n),de_p or r['profile'],de_s or r['products'],'Produkte und Dienstleistungen'),
-       "conf":conf,"logo":"","li":"","yt":"","ipcei":[],"note":r.get('note',''),"verified":bool(r['profile']),"liScope":"","liFilter":"","offer":{},"ver":1 if conf=='high' else 0,"code":code,"raw":r['raw'],"eco":eco}
+       "conf":conf,"logo":"","li":"","yt":"","ipcei":[],"note":r.get('note',''),"noteDe":TN.get(r['id'],{}).get('de',''),"noteEn":TN.get(r['id'],{}).get('en',''),"verified":bool(r['profile']),"liScope":"","liFilter":"","offer":{},"ver":1 if conf=='high' else 0,"code":code,"raw":r['raw'],"eco":eco}
+    NAME_TR=[('(pobočka Mnichov)','(Niederlassung München)','(Munich branch)'),('(vývojové centrum Mnichov)','(Entwicklungszentrum München)','(Munich development centre)'),('(bavorská pobočka)','(bayerische Niederlassung)','(Bavarian branch)'),('(bavorské závody Landshut / Mitterteich)','(bayerische Werke Landshut / Mitterteich)','(Bavarian plants Landshut / Mitterteich)'),('(vázáno na region Hirschau/Bavorsko)','(Region Hirschau/Bayern)','(Hirschau region, Bavaria)'),('(pobočka / aktivity v Bavorsku)','(Niederlassung / Aktivitäten in Bayern)','(branch / activities in Bavaria)'),('(Bavorské zastoupení / chemie)','(bayerische Vertretung / Chemie)','(Bavarian office / chemicals)'),('(Německá centrála)','(deutsche Zentrale)','(German headquarters)'),('(pobočka / působnost v Bavorsku)','(Niederlassung / Tätigkeit in Bayern)','(branch / presence in Bavaria)'),('(R&D a pobočka v Bavorsku)','(F&E und Niederlassung in Bayern)','(R&D and branch in Bavaria)'),('(Bavorské pobočky / Neuhausen)','(bayerische Niederlassungen / Neuhausen)','(Bavarian branches / Neuhausen)'),('(Bavorská obchodní/aplikační pobočka)','(bayerische Vertriebs-/Applikationsniederlassung)','(Bavarian sales/applications office)'),('(pobočky / R&D v Bavorsku – např. Waldkirch/München)','(Niederlassungen / F&E in Bayern)','(branches / R&D in Bavaria)'),('(pobočky Bavorsko)','(Niederlassungen Bayern)','(Bavarian branches)'),('(pobočka)','(Niederlassung)','(branch)')]
+    for cz_,de_,en_ in NAME_TR:
+        if cz_ in m['n']:
+            m['nn']={'cs':m['n'],'de':m['n'].replace(cz_,de_),'en':m['n'].replace(cz_,en_)}; break
     b=BCA.get(i)
     m['bca']=b['c'] if b else ''
     m['bcaAs']=b['as'] if b else ''
