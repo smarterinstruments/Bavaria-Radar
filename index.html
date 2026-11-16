@@ -34,6 +34,7 @@
 .card.hl{outline:2px solid var(--accent);outline-offset:2px}
 @media (min-width:1100px){.vcmap{grid-template-columns:repeat(4,1fr)}}
 .chip.bca-partner{color:var(--text);border:1px solid var(--accent,#2563eb);background:transparent}.chip.bca-listed{color:var(--muted);border:1px solid var(--muted);background:transparent}.chip.bca-operator{color:var(--text);border:1px solid var(--accent,#2563eb);background:var(--accent-bg,rgba(37,99,235,.08))}
+.radarwrap.full{display:block}.key.keyfull{margin:12px 0 26px}.key.keyfull .rk.legend{padding:10px 16px 12px}.key.keyfull .rk.legend .lis{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2px 22px}.key.keyfull .rk.legend .seglist{display:flex;flex-wrap:wrap;gap:4px 16px}
 </style></head><body>
 <title>Semiconductor Value Chain Radar – Bavaria preview</title>
 <meta name="description" content="Weekly radar of what the members of the Czech National Semiconductor Cluster publish: products, investments, projects, events, partnerships and awards.">
@@ -241,13 +242,10 @@ footer{border-top:1px solid var(--line);padding:12px 0 28px;font-family:"IBM Ple
     <div class="stats" id="stats"></div>
     <h2 id="radarH"></h2>
     <p class="sub" id="radarSub"></p>
-    <div class="radarwrap">
+    <div class="radarwrap full">
       <div class="radar"><div id="radarSvg"></div><div class="tip" id="tip"></div></div>
-      <div>
-        <div class="key" id="key"></div>
-        <div class="seglist" id="seglist"></div>
-      </div>
     </div>
+    <div class="key keyfull" id="key"></div><div class="seglist" id="seglist" hidden></div>
     <div class="top">
       <h2 id="topH"></h2>
       <p class="sub" id="topSub"></p>
@@ -925,7 +923,7 @@ function renderAbout() {
 
 function renderRadar() {
   const t = T();
-  const W = 1180, H = 770, C = W / 2, CY = 385, R = [0, 210, 342];
+  const W = 1500, H = 1010, C = W / 2, CY = 500, R = [0, 282, 458];
   const segs = D.segments;
   const counts = Object.fromEntries(segs.map(s => [s.id, D.members.filter(m => m.s === s.id).length]));
   const tot = segs.reduce((a, s) => a + Math.max(2, counts[s.id]), 0);
@@ -969,16 +967,25 @@ function renderRadar() {
   const dotRects = dots.map(d => ({x0: d.x - 11, x1: d.x + 11, y0: d.y - 11, y1: d.y + 11, d}));
   const hit = (r, q) => !(r.x1 <= q.x0 || q.x1 <= r.x0 || r.y1 <= q.y0 || q.y1 <= r.y0);
   const candsFor = (d, wide) => {
-    const outward = Math.cos(Math.atan2(d.y - CY, d.x - C)) >= 0;
-    const side = outward ? 'start' : 'end', other = outward ? 'end' : 'start', sx = outward ? 13 : -13;
+    // candidates on rings around the dot: 12 directions x distances; outward side first, then the rest; the wide set reaches further (leader line is drawn)
+    const ang0 = Math.atan2(d.y - CY, d.x - C);
+    const dists = wide ? [14, 24, 36, 50, 66, 84, 104, 126, 150, 176, 204] : [14, 24, 36];
+    const nd = wide ? 24 : 12;
     const c = [];
-    const push = (dx, dy, anc) => c.push({dx, dy, anc});
-    push(sx, 5, side); push(-sx, 5, other); push(0, -15, 'middle'); push(0, 25, 'middle');
-    [13, 26, 39].forEach(k => { push(sx, 5 - k, side); push(sx, 5 + k, side); push(-sx, 5 - k, other); push(-sx, 5 + k, other); push(0, -15 - k, 'middle'); push(0, 25 + k, 'middle'); });
-    if (wide) [52, 65, 78, 91, 104].forEach(k => { push(sx, 5 - k, side); push(sx, 5 + k, side); push(-sx, 5 - k, other); push(-sx, 5 + k, other); push(0, -15 - k, 'middle'); push(0, 25 + k, 'middle'); [26, 40].forEach(e => { push(sx + (outward ? e : -e), 5 - k, side); push(sx + (outward ? e : -e), 5 + k, side); }); });
+    dists.forEach(r => {
+      const dirs = [];
+      for (let k = 0; k < nd; k++) dirs.push(k * 2 * Math.PI / nd);
+      dirs.sort((a, b) => Math.abs(Math.atan2(Math.sin(a - ang0), Math.cos(a - ang0))) - Math.abs(Math.atan2(Math.sin(b - ang0), Math.cos(b - ang0))));
+      dirs.forEach(a => {
+        const cx = Math.cos(a), sy = Math.sin(a);
+        const anc = cx > 0.35 ? 'start' : cx < -0.35 ? 'end' : 'middle';
+        const dx = cx * r, dy = sy * r + (anc === 'middle' ? (sy < 0 ? -4 : 12) : 5);
+        c.push({dx, dy, anc});
+      });
+    });
     return c;
   };
-  const rectOf = (d, c, w) => { const x = d.x + c.dx, y = d.y + c.dy; const x0 = c.anc === 'start' ? x : c.anc === 'end' ? x - w : x - w / 2; return {x0: x0 - 1, x1: x0 + w + 1, y0: y - 13, y1: y + 4, x, y}; };
+  const rectOf = (d, c, w) => { const x = d.x + c.dx, y = d.y + c.dy; const x0 = c.anc === 'start' ? x : c.anc === 'end' ? x - w : x - w / 2; return {x0: x0 - 2, x1: x0 + w + 2, y0: y - 14.5, y1: y + 5.5, x, y}; };
   const inBounds = r => r.x0 >= 2 && r.x1 <= W - 2 && r.y0 >= 2 && r.y1 <= H - 2;
   const labels = [];
   const choose = (d, w, others, wide) => {
@@ -998,18 +1005,35 @@ function renderRadar() {
   // dense radars: label only the most relevant dots (top items, financial results/investments, number of items, recency); the rest stay as dots with tooltip
   const nCount = {}, nTop = {}, nFin = {};
   D.news.forEach(n => (n.m || []).forEach(id => { nCount[id] = (nCount[id] || 0) + 1; if (n.top) nTop[id] = 1; if (n.ty === 'finance' || n.ty === 'invest') nFin[id] = 1; }));
-  const MAXL = 56;
+  const MAXL = Infinity;
   const prio = d => (d.ring) * 1000 - (nTop[d.m.id] ? 300 : 0) - (nFin[d.m.id] ? 100 : 0) - Math.min(nCount[d.m.id] || 0, 5) * 20 + Math.hypot(d.x - C, d.y - CY) / 100;
   const order = dots.slice().sort((p, q) => prio(p) - prio(q));
   const labelSet = new Set(order.slice(0, MAXL).map(d => d.m.id));
   const dense = order.length > MAXL;
   order.forEach(d => { if (!labelSet.has(d.m.id)) { labels.push({d, w: 0, r: null, c: null, clash: false, nolabel: true}); return; } const w = tw(d.m.short); const placed = labels.filter(l => l.r).map(l => l.r); let {best, clash} = choose(d, w, placed, false); if (clash) ({best, clash} = choose(d, w, placed, true)); if (clash && dense) { labels.push({d, w: 0, r: null, c: null, clash: false, nolabel: true}); return; } labels.push({d, w, r: best.r, c: best.c, clash}); });
-  for (let pass = 0; pass < 3; pass++) {
+  for (let pass = 0; pass < 6; pass++) {
     let fixedAny = false;
     labels.forEach(l => { if (!l.clash || l.nolabel) return; const others = labels.filter(o => o !== l && o.r).map(o => o.r); const {best, clash} = choose(l.d, l.w, others, true); l.r = best.r; l.c = best.c; l.clash = clash; if (!clash) fixedAny = true; });
     if (!fixedAny) break;
   }
-  labels.forEach(l => { if (l.nolabel) return; l.x = l.r.x; l.y = l.r.y; l.anchor = l.c.anc; l.right = l.c.anc === 'start'; l.moved = !(l.c.dy === 5 && Math.abs(l.c.dx) === 13); });
+  // last resort: relocate a blocking neighbour label so that the clashing one gets a free spot
+  labels.forEach(l => {
+    if (!l.clash || l.nolabel) return;
+    const cs = candsFor(l.d, true);
+    for (const c of cs) {
+      const r = rectOf(l.d, c, l.w); if (!inBounds(r)) continue;
+      if (dotRects.some(q => q.d !== l.d && hit(r, q))) continue;
+      if (secRects.some(q => hit(r, q))) continue;
+      const blockers = labels.filter(o => o !== l && o.r && !o.nolabel && hit(r, o.r));
+      if (blockers.length !== 1) continue;
+      const b = blockers[0];
+      const others = labels.filter(o => o !== b && o !== l && o.r).map(o => o.r).concat([r]);
+      const alt = choose(b.d, b.w, others, true);
+      if (alt.clash) continue;
+      b.r = alt.best.r; b.c = alt.best.c; l.r = r; l.c = c; l.clash = false; break;
+    }
+  });
+  labels.forEach(l => { if (l.nolabel) return; l.x = l.r.x; l.y = l.r.y; l.anchor = l.c.anc; l.right = l.c.anc === 'start'; l.moved = Math.hypot(l.c.dx, l.c.dy - 5) > 20; });
   const nUnl = labels.filter(l => l.nolabel).length;
   labels.forEach(l => {
     const d = l.d;
@@ -1040,9 +1064,9 @@ function renderRadar() {
     return `<div class="rk" style="--c:${ringColor(r.n)}"><div class="n">${esc(t.level)} ${r.n} · ${esc(L({cs:r.desc_cs,en:r.desc_en,de:r.desc_de,nl:r.desc_nl,zh:r.desc_zh}))}</div><div class="t">${esc(L(r))}</div><div class="w">${w}</div></div>`;
   }).join('');
   const seglist = segs.map(s => `<span style="--c:${segColor(s.id)}"><i></i>${esc(s.code)} ${esc(L(s))} (${counts[s.id]})</span>`).join('');
-  $('key').innerHTML = levels + `<div class="rk legend" style="--c:var(--line)"><div class="n">${esc(t.legendH)}</div>` +
+  $('key').innerHTML = `<div class="rk legend" style="--c:var(--line)"><div class="n">${esc(t.legendH)}</div><div class="lis">` +
     t.legend.map(([k, v]) => `<div class="li"><b>${esc(k)}</b> ${esc(v)}</div>`).join('') +
-    `<div class="li"><b>${esc(t.legendQuiet)}</b> ${quietN} ${esc(t.legendQuiet2)}</div><div class="seglist">${seglist}</div></div>`;
+    `<div class="li"><b>${esc(t.legendQuiet)}</b> ${quietN} ${esc(t.legendQuiet2)}</div></div><div class="seglist">${seglist}</div></div>`;
   $('seglist').innerHTML = '';
   $('key').querySelectorAll('[data-go]').forEach(a => a.onclick = e => { e.preventDefault(); goMember(a.dataset.go); });
 }

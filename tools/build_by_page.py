@@ -149,16 +149,25 @@ NEW_LABELS=r"""  // labels: greedy placement without overlaps (candidates around
   const dotRects = dots.map(d => ({x0: d.x - 11, x1: d.x + 11, y0: d.y - 11, y1: d.y + 11, d}));
   const hit = (r, q) => !(r.x1 <= q.x0 || q.x1 <= r.x0 || r.y1 <= q.y0 || q.y1 <= r.y0);
   const candsFor = (d, wide) => {
-    const outward = Math.cos(Math.atan2(d.y - CY, d.x - C)) >= 0;
-    const side = outward ? 'start' : 'end', other = outward ? 'end' : 'start', sx = outward ? 13 : -13;
+    // candidates on rings around the dot: 12 directions x distances; outward side first, then the rest; the wide set reaches further (leader line is drawn)
+    const ang0 = Math.atan2(d.y - CY, d.x - C);
+    const dists = wide ? [14, 24, 36, 50, 66, 84, 104, 126, 150, 176, 204] : [14, 24, 36];
+    const nd = wide ? 24 : 12;
     const c = [];
-    const push = (dx, dy, anc) => c.push({dx, dy, anc});
-    push(sx, 5, side); push(-sx, 5, other); push(0, -15, 'middle'); push(0, 25, 'middle');
-    [13, 26, 39].forEach(k => { push(sx, 5 - k, side); push(sx, 5 + k, side); push(-sx, 5 - k, other); push(-sx, 5 + k, other); push(0, -15 - k, 'middle'); push(0, 25 + k, 'middle'); });
-    if (wide) [52, 65, 78, 91, 104].forEach(k => { push(sx, 5 - k, side); push(sx, 5 + k, side); push(-sx, 5 - k, other); push(-sx, 5 + k, other); push(0, -15 - k, 'middle'); push(0, 25 + k, 'middle'); [26, 40].forEach(e => { push(sx + (outward ? e : -e), 5 - k, side); push(sx + (outward ? e : -e), 5 + k, side); }); });
+    dists.forEach(r => {
+      const dirs = [];
+      for (let k = 0; k < nd; k++) dirs.push(k * 2 * Math.PI / nd);
+      dirs.sort((a, b) => Math.abs(Math.atan2(Math.sin(a - ang0), Math.cos(a - ang0))) - Math.abs(Math.atan2(Math.sin(b - ang0), Math.cos(b - ang0))));
+      dirs.forEach(a => {
+        const cx = Math.cos(a), sy = Math.sin(a);
+        const anc = cx > 0.35 ? 'start' : cx < -0.35 ? 'end' : 'middle';
+        const dx = cx * r, dy = sy * r + (anc === 'middle' ? (sy < 0 ? -4 : 12) : 5);
+        c.push({dx, dy, anc});
+      });
+    });
     return c;
   };
-  const rectOf = (d, c, w) => { const x = d.x + c.dx, y = d.y + c.dy; const x0 = c.anc === 'start' ? x : c.anc === 'end' ? x - w : x - w / 2; return {x0: x0 - 1, x1: x0 + w + 1, y0: y - 13, y1: y + 4, x, y}; };
+  const rectOf = (d, c, w) => { const x = d.x + c.dx, y = d.y + c.dy; const x0 = c.anc === 'start' ? x : c.anc === 'end' ? x - w : x - w / 2; return {x0: x0 - 2, x1: x0 + w + 2, y0: y - 14.5, y1: y + 5.5, x, y}; };
   const inBounds = r => r.x0 >= 2 && r.x1 <= W - 2 && r.y0 >= 2 && r.y1 <= H - 2;
   const labels = [];
   const choose = (d, w, others, wide) => {
@@ -184,12 +193,29 @@ NEW_LABELS=r"""  // labels: greedy placement without overlaps (candidates around
   const labelSet = new Set(order.slice(0, MAXL).map(d => d.m.id));
   const dense = order.length > MAXL;
   order.forEach(d => { if (!labelSet.has(d.m.id)) { labels.push({d, w: 0, r: null, c: null, clash: false, nolabel: true}); return; } const w = tw(d.m.short); const placed = labels.filter(l => l.r).map(l => l.r); let {best, clash} = choose(d, w, placed, false); if (clash) ({best, clash} = choose(d, w, placed, true)); if (clash && dense) { labels.push({d, w: 0, r: null, c: null, clash: false, nolabel: true}); return; } labels.push({d, w, r: best.r, c: best.c, clash}); });
-  for (let pass = 0; pass < 3; pass++) {
+  for (let pass = 0; pass < 6; pass++) {
     let fixedAny = false;
     labels.forEach(l => { if (!l.clash || l.nolabel) return; const others = labels.filter(o => o !== l && o.r).map(o => o.r); const {best, clash} = choose(l.d, l.w, others, true); l.r = best.r; l.c = best.c; l.clash = clash; if (!clash) fixedAny = true; });
     if (!fixedAny) break;
   }
-  labels.forEach(l => { if (l.nolabel) return; l.x = l.r.x; l.y = l.r.y; l.anchor = l.c.anc; l.right = l.c.anc === 'start'; l.moved = !(l.c.dy === 5 && Math.abs(l.c.dx) === 13); });
+  // last resort: relocate a blocking neighbour label so that the clashing one gets a free spot
+  labels.forEach(l => {
+    if (!l.clash || l.nolabel) return;
+    const cs = candsFor(l.d, true);
+    for (const c of cs) {
+      const r = rectOf(l.d, c, l.w); if (!inBounds(r)) continue;
+      if (dotRects.some(q => q.d !== l.d && hit(r, q))) continue;
+      if (secRects.some(q => hit(r, q))) continue;
+      const blockers = labels.filter(o => o !== l && o.r && !o.nolabel && hit(r, o.r));
+      if (blockers.length !== 1) continue;
+      const b = blockers[0];
+      const others = labels.filter(o => o !== b && o !== l && o.r).map(o => o.r).concat([r]);
+      const alt = choose(b.d, b.w, others, true);
+      if (alt.clash) continue;
+      b.r = alt.best.r; b.c = alt.best.c; l.r = r; l.c = c; l.clash = false; break;
+    }
+  });
+  labels.forEach(l => { if (l.nolabel) return; l.x = l.r.x; l.y = l.r.y; l.anchor = l.c.anc; l.right = l.c.anc === 'start'; l.moved = Math.hypot(l.c.dx, l.c.dy - 5) > 20; });
   const nUnl = labels.filter(l => l.nolabel).length;
 """
 T=T[:a]+NEW_LABELS+T[z:]
@@ -313,6 +339,34 @@ T=T.replace(OLD_NOTE,"(m.note ? `<div class=\"note\">${esc(L({cs:m.note,en:m.not
 OLD_RA="function renderAll() { renderStatic();"
 assert T.count(OLD_RA)==1, T.count(OLD_RA)
 T=T.replace(OLD_RA,"function renderAll() { D.members.forEach(m=>{ if(m.nn) m.n=m.nn[LANG]||m.nn.de||m.n; }); renderStatic();",1)
+# ---- overview layout: full-width radar, legend below it (full width), then Top news; the "this week / this month" column is dropped
+OLD_WRAP="""    <div class="radarwrap">
+      <div class="radar"><div id="radarSvg"></div><div class="tip" id="tip"></div></div>
+      <div>
+        <div class="key" id="key"></div>
+        <div class="seglist" id="seglist"></div>
+      </div>
+    </div>"""
+assert T.count(OLD_WRAP)==1
+T=T.replace(OLD_WRAP,"""    <div class="radarwrap full">
+      <div class="radar"><div id="radarSvg"></div><div class="tip" id="tip"></div></div>
+    </div>
+    <div class="key keyfull" id="key"></div><div class="seglist" id="seglist" hidden></div>""",1)
+OLD_KEYHTML="""  $('key').innerHTML = levels + `<div class="rk legend" style="--c:var(--line)"><div class="n">${esc(t.legendH)}</div>` +
+    t.legend.map(([k, v]) => `<div class="li"><b>${esc(k)}</b> ${esc(v)}</div>`).join('') +
+    `<div class="li"><b>${esc(t.legendQuiet)}</b> ${quietN} ${esc(t.legendQuiet2)}</div><div class="seglist">${seglist}</div></div>`;"""
+assert T.count(OLD_KEYHTML)==1
+T=T.replace(OLD_KEYHTML,"""  $('key').innerHTML = `<div class="rk legend" style="--c:var(--line)"><div class="n">${esc(t.legendH)}</div><div class="lis">` +
+    t.legend.map(([k, v]) => `<div class="li"><b>${esc(k)}</b> ${esc(v)}</div>`).join('') +
+    `<div class="li"><b>${esc(t.legendQuiet)}</b> ${quietN} ${esc(t.legendQuiet2)}</div></div><div class="seglist">${seglist}</div></div>`;""",1)
+T=T.replace("</style>",".radarwrap.full{display:block}.key.keyfull{margin:12px 0 26px}.key.keyfull .rk.legend{padding:10px 16px 12px}.key.keyfull .rk.legend .lis{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2px 22px}.key.keyfull .rk.legend .seglist{display:flex;flex-wrap:wrap;gap:4px 16px}\n</style>",1)
+# bigger drawing area so that every active organisation gets a label
+OLD_GEO="const W = 1180, H = 770, C = W / 2, CY = 385, R = [0, 210, 342];"
+assert T.count(OLD_GEO)==1
+T=T.replace(OLD_GEO,"const W = 1500, H = 1010, C = W / 2, CY = 500, R = [0, 282, 458];",1)
+OLD_MAXL="const MAXL = 56;"
+assert T.count(OLD_MAXL)==1
+T=T.replace(OLD_MAXL,"const MAXL = Infinity;",1)
 assert 'renderMap();' in T and 'id="p-map"' in T and "'map','news'" in T
 html=T.replace('/*__DATA__*/',body)
 open('index.html','w',encoding='utf-8').write(html)
