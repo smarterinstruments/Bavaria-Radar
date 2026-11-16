@@ -1,0 +1,248 @@
+{
+"meta": {
+"edition": "W46/2026",
+"updated": "2026-11-14",
+"status": "alpha",
+"org": "Czech National Semiconductor Cluster, z.s.",
+"contact": "info@semicz.cz",
+"web": "https://www.semicz.cz",
+"linkedin": "https://www.linkedin.com/company/cz_semi_cluster/",
+"title": {
+"cs": "Radar polovodičového hodnotového řetězce – český pilot",
+"en": "Semiconductor Value Chain Radar – Czech pilot"
+},
+"lede": {
+"cs": "Co firmy v polovodičovém hodnotovém řetězci každý týden zveřejní, od návrhu čipů přes zařízení a materiály po výrobu a distribuci. Seznam firem vychází z trackeru ChipDiplo (CEIAS); zařazení do segmentů ověřuje CNSC. První edice pokrývá Česko.",
+"en": "What companies along the semiconductor value chain publish each week, from chip design through equipment and materials to fabrication and distribution. The company list comes from the ChipDiplo tracker (CEIAS); CNSC verifies the segment of each company. The first edition covers Czechia."
+},
+"banner": {
+"cs": "Nultá edice W46/2026 (14. 11. 2026), pracovní verze. Aktivity jsou zatím převzaty z Radaru aktivit členů CNSC (sběr do 8. 11. 2026) pro firmy, které jsou členy klastru; u ostatních firem sběr teprve začíná.",
+"en": "Edition zero W46/2026 (14 Nov 2026), working version. Activities are so far carried over from the CNSC Member Activity Radar (collected up to 8 Nov 2026) for companies that are cluster members; collection for the other companies is only starting."
+}
+},
+"segments": [
+{
+"id": "design",
+"code": "01",
+"cs": "Návrh čipů a IP",
+"en": "Chip design & IP",
+"c": {
+"l": "#0066B5",
+"d": "#3B8FD9"
+}
+},
+{
+"id": "software",
+"code": "02",
+"cs": "Software pro čipy",
+"en": "Software for chips",
+"c": {
+"l": "#65A30D",
+"d": "#65A30D"
+}
+},
+{
+"id": "equipment",
+"code": "03",
+"cs": "Zařízení",
+"en": "Equipment",
+"c": {
+"l": "#7C3AED",
+"d": "#8B5CF6"
+}
+},
+{
+"id": "metrology",
+"code": "04",
+"cs": "Metrologie",
+"en": "Metrology",
+"c": {
+"l": "#DB2777",
+"d": "#EC4899"
+}
+},
+{
+"id": "subsystems",
+"code": "05",
+"cs": "Subsystémy a služby",
+"en": "Subsystems & services",
+"c": {
+"l": "#D97706",
+"d": "#D97706"
+}
+},
+{
+"id": "materials",
+"code": "06",
+"cs": "Materiály",
+"en": "Materials",
+"c": {
+"l": "#0D9488",
+"d": "#0D9488"
+}
+},
+{
+"id": "fab",
+"code": "07",
+"cs": "Výroba a pouzdření",
+"en": "Fab & packaging",
+"c": {
+"l": "#B91C1C",
+"d": "#C2410C"
+}
+},
+{
+"id": "distribution",
+"code": "08",
+"cs": "Distribuce",
+"en": "Distribution",
+"c": {
+"l": "#16A34A",
+"d": "#16A34A"
+}
+}
+],
+"rings": [
+{
+"n": 1,
+"days": 7,
+"cs": "Tento týden",
+"en": "This week",
+"desc_cs": "veřejná aktivita za posledních 7 dní",
+"desc_en": "public activity in the last 7 days",
+"de": "Diese Woche",
+"zh": "本週",
+"desc_de": "öffentliche Aktivität in den letzten 7 Tagen",
+"nl": "Deze week",
+"desc_nl": "openbare activiteit in de laatste 7 dagen",
+"desc_zh": "過去7天內的公開動態"
+},
+{
+"n": 2,
+"days": 31,
+"cs": "Tento měsíc",
+"en": "This month",
+"desc_cs": "poslední aktivita před 8–31 dny",
+"desc_en": "last activity 8–31 days ago",
+"de": "Diesen Monat",
+"zh": "本月",
+"desc_de": "letzte Aktivität vor 8–31 Tagen",
+"nl": "Deze maand",
+"desc_nl": "laatste activiteit 8–31 dagen geleden",
+"desc_zh": "最近動態在8–31天前"
+},
+{
+"n": 3,
+"days": 92,
+"cs": "Toto čtvrtletí",
+"en": "This quarter",
+"desc_cs": "poslední aktivita před 32–92 dny",
+"desc_en": "last activity 32–92 days ago",
+"de": "Dieses Quartal",
+"zh": "本季",
+"desc_de": "letzte Aktivität vor 32–92 Tagen",
+"nl": "Dit kwartaal",
+"desc_nl": "laatste activiteit 32–92 dagen geleden",
+"desc_zh": "最近動態在32–92天前"
+},
+{
+"n": 4,
+"days": null,
+"cs": "Bez sledované aktivity",
+"en": "No tracked activity",
+"desc_cs": "déle než čtvrtletí nic, nebo sledování teprve začíná",
+"desc_en": "nothing for more than a quarter, or tracking has just begun",
+"de": "Keine erfasste Aktivität",
+"zh": "無紀錄動態",
+"desc_de": "seit über einem Quartal nichts, oder die Beobachtung beginnt gerade",
+"nl": "Geen geregistreerde activiteit",
+"desc_nl": "meer dan een kwartaal niets, of het volgen is net begonnen",
+"desc_zh": "超過一季無動態，或剛開始追蹤"
+}
+],
+"types": [
+{
+"id": "launch",
+"cs": "Produkt / technologie",
+"en": "Product / technology",
+"de": "Produkt / Technologie",
+"nl": "Product / technologie",
+"zh": "產品/技術"
+},
+{
+"id": "invest",
+"cs": "Investice a expanze",
+"en": "Investment & expansion",
+"de": "Investition & Expansion",
+"nl": "Investering & uitbreiding",
+"zh": "投資與擴張"
+},
+{
+"id": "project",
+"cs": "Projekt / grant",
+"en": "Project / grant",
+"de": "Projekt / Förderung",
+"nl": "Project / subsidie",
+"zh": "專案/補助"
+},
+{
+"id": "event",
+"cs": "Akce a vystoupení",
+"en": "Event / talk",
+"de": "Veranstaltung / Vortrag",
+"nl": "Evenement / lezing",
+"zh": "活動/報告"
+},
+{
+"id": "partner",
+"cs": "Partnerství / MoU",
+"en": "Partnership / MoU",
+"de": "Partnerschaft / MoU",
+"nl": "Partnerschap / MoU",
+"zh": "合作/備忘錄"
+},
+{
+"id": "award",
+"cs": "Ocenění",
+"en": "Award",
+"de": "Auszeichnung",
+"nl": "Prijs",
+"zh": "獎項"
+},
+{
+"id": "people",
+"cs": "Lidé a vedení",
+"en": "People & leadership",
+"de": "Personen & Führung",
+"nl": "Mensen & leiderschap",
+"zh": "人事與管理層"
+}
+],
+"sourcesKinds": [
+{
+"id": "linkedin",
+"cs": "LinkedIn stránka firmy",
+"en": "Company LinkedIn page"
+},
+{
+"id": "web",
+"cs": "Web firmy",
+"en": "Company website"
+},
+{
+"id": "press",
+"cs": "Tisk / média",
+"en": "Press / media"
+},
+{
+"id": "member",
+"cs": "Zasláno firmou",
+"en": "Sent by the company"
+},
+{
+"id": "cnsc",
+"cs": "Kanály CNSC",
+"en": "CNSC channels"
+}
+]
+}

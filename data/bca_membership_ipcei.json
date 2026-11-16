@@ -1,0 +1,67 @@
+{
+ "_sources": {
+  "bca": {"name": "Bavarian Chips Alliance – Kompetenzatlas (Bayern Innovativ), Stand 16. 11. 2026, 252 Einträge", "url": "https://www.bayern-innovativ.de/en/competencies-bavarian-chips-alliance/"},
+  "ipcei_mect": {"name": "BMWK-Pressepapier „IPCEI im Bereich Mikroelektronik und European Chips Act“, 18. 09. 2023 – Liste der 31 deutschen IPCEI ME/KT-Teilnehmer mit Standorten", "url": "https://www.bundeswirtschaftsministerium.de/Redaktion/DE/Downloads/M-O/20230918-mikroelektronik-bmwk-pressepapier.html"},
+  "ipcei_me": {"name": "BMWK-Pressepapier 18. 09. 2023, Abb. 1 – deutsche Teilnehmer des 1. IPCEI Mikroelektronik (2018)", "url": "https://www.bundeswirtschaftsministerium.de/Redaktion/DE/Downloads/M-O/20230918-mikroelektronik-bmwk-pressepapier.html"},
+  "ipcei_karte": {"name": "BMWK – IPCEI im Bereich Mikroelektronik: Karte deutsche Unternehmen (18. 09. 2023)", "url": "https://www.bundeswirtschaftsministerium.de/Redaktion/DE/Downloads/M-O/202306-ipcei-mikroelektronik-2-karte.html"},
+  "ipcei_ast": {"name": "BMWE-Pressemitteilung 19. 03. 2026: 38 deutsche Projekte für IPCEI AST ausgewählt – ohne Nennung der Unternehmen", "url": "https://www.bundeswirtschaftsministerium.de/Redaktion/DE/Pressemitteilungen/2026/03/20260319-ipcei-halbleiter-38-deutsche-projekte-fuer-europaeisches-schluesselprogramm-ausgewaehlt.html"}
+ },
+ "bca": {
+  "asic-gmbh-lineare-systeme": {"c": "partner", "as": "ASIC GmbH Lineare Systeme", "t": "unternehmen/partner"},
+  "bayerisches-chip-design-center-bcdc": {"c": "partner", "as": "Bayerisches Chip-Design-Center (BCDC)", "t": "partner/netzwerk/forschung/sonstige"},
+  "micron-semiconductor-deutschland-gmbh": {"c": "partner", "as": "Micron Semiconductor (Deutschland) GmbH", "t": "partner/unternehmen"},
+  "innolas-semiconductor-gmbh": {"c": "partner", "as": "InnoLas Semiconductor GmbH", "t": "unternehmen/partner"},
+  "suss-microtec-se": {"c": "partner", "as": "SUSS MicroTec SE", "t": "partner/unternehmen"},
+  "ers-electronic-gmbh": {"c": "partner", "as": "ERS electronic GmbH", "t": "partner/unternehmen"},
+  "infineon-technologies-ag": {"c": "partner", "as": "Infineon Technologies AG", "t": "unternehmen/partner"},
+  "semikron-danfoss-elektronik-gmbh-co-kg": {"c": "partner", "as": "Semikron Danfoss Elektronik GmbH & Co. KG", "t": "unternehmen/partner"},
+  "fraunhofer-emft-einrichtung-fur-mikrosys": {"c": "partner", "as": "Fraunhofer EMFT", "t": "forschung/partner"},
+  "fraunhofer-iis-institut-fur-integrierte": {"c": "partner", "as": "Fraunhofer-Institut für Integrierte Schaltungen IIS", "t": "forschung/partner"},
+  "fraunhofer-iisb-integrierte-systeme-und": {"c": "partner", "as": "Fraunhofer IISB", "t": "forschung/partner"},
+  "friedrich-alexander-universitat-erlangen": {"c": "partner", "as": "FAU-Lehrstühle: Elektronische Bauelemente (LEB), Optoelektronik, Elektrische Smart City Systeme (ESCS)", "t": "uni/partner/forschung", "via": true},
+  "ostbayerische-technische-hochschule-rege": {"c": "partner", "as": "Ostbayerische Technische Hochschule Regensburg", "t": "uni/netzwerk/forschung/partner"},
+  "micro-epsilon-messtechnik-gmbh-co-kg": {"c": "partner", "as": "MICRO-EPSILON MESSTECHNIK GmbH & Co. KG", "t": "unternehmen/partner"},
+  "nextnano-gmbh": {"c": "listed", "as": "nextnano GmbH", "t": ""},
+  "codasip-gmbh": {"c": "listed", "as": "Codasip GmbH", "t": "startup/unternehmen"},
+  "quintauris-gmbh": {"c": "listed", "as": "Quintauris GmbH", "t": ""},
+  "lauterbach-gmbh": {"c": "listed", "as": "Lauterbach GmbH", "t": ""},
+  "senswork-gmbh": {"c": "listed", "as": "senswork GmbH", "t": ""},
+  "advantest-europe-gmbh": {"c": "listed", "as": "Advantest Europe GmbH", "t": "unternehmen"},
+  "rohde-schwarz-gmbh-co-kg": {"c": "listed", "as": "Rohde & Schwarz GmbH & Co. KG", "t": ""},
+  "vx-instruments-gmbh": {"c": "listed", "as": "VX Instruments GmbH", "t": ""},
+  "siltronic-ag": {"c": "listed", "as": "Siltronic AG", "t": "unternehmen"},
+  "nexperia-germany-gmbh-r-d-a-pobocka-v-ba": {"c": "listed", "as": "Nexperia Germany GmbH", "t": ""},
+  "nxp-semiconductors-germany-gmbh-pobocka": {"c": "listed", "as": "NXP Semiconductors Germany GmbH", "t": ""},
+  "texas-instruments-deutschland-gmbh-ffab": {"c": "listed", "as": "Texas Instruments Deutschland GmbH", "t": "unternehmen"},
+  "linde-gmbh-linde-engineering-gases": {"c": "listed", "as": "Linde Electronics GmbH & Co. KG (Pullach)", "t": "", "via": true},
+  "sensorik-bayern-gmbh-strategische-partne": {"c": "listed", "as": "Strategische Partnerschaft Sensorik e.V. | Cluster Sensorik", "t": "netzwerk", "via": true},
+  "technische-universitat-munchen-tum-mikro": {"c": "listed", "as": "TU München, Lehrstuhl für Schaltungsentwurf", "t": "", "via": true},
+  "bavarian-chips-alliance-bayern-innovativ": {"c": "operator", "as": "Bayern Innovativ GmbH (Träger des Kompetenzatlas)", "t": ""}
+ },
+ "ipcei": {
+  "applied-materials-gmbh": [{"p": "ME/CT", "y": 2023, "ent": "Applied Materials GmbH", "s": "Feldkirchen b. München", "by": true}],
+  "infineon-technologies-ag": [
+   {"p": "ME/CT", "y": 2023, "ent": "Infineon Technologies AG", "s": "München, Regensburg; Warstein (NRW)", "by": true},
+   {"p": "ME", "y": 2018, "ent": "Infineon Technologies AG", "s": "Regensburg; Warstein (NRW)", "by": true}],
+  "nxp-semiconductors-germany-gmbh-pobocka": [{"p": "ME/CT", "y": 2023, "ent": "NXP Semiconductors Germany GmbH", "s": "München; Hamburg; Dresden (SN)", "by": true}],
+  "ams-osram-ag-osram-opto-semiconductors": [
+   {"p": "ME/CT", "y": 2023, "ent": "ams-OSRAM International GmbH", "s": "Regensburg", "by": true},
+   {"p": "ME", "y": 2018, "ent": "OSRAM Opto Semiconductors GmbH", "s": "Regensburg", "by": true}],
+  "bosch-semiconductor-design-center-munich": [
+   {"p": "ME/CT", "y": 2023, "ent": "Robert Bosch GmbH", "s": "Ansbach, Blaichach; Abstatt, Leonberg, Reutlingen (BW); Dresden (SN)", "by": true},
+   {"p": "ME", "y": 2018, "ent": "Robert Bosch GmbH", "s": "Reutlingen (BW)", "by": false}],
+  "bosch-sensortec-gmbh-munchen": [{"p": "ME/CT", "y": 2023, "ent": "Bosch Sensortec GmbH", "s": "München; Reutlingen (BW); Dresden (SN)", "by": true}],
+  "rohde-schwarz-gmbh-co-kg": [{"p": "ME/CT", "y": 2023, "ent": "Rohde & Schwarz GmbH & Co. KG", "s": "Memmingen, München, Teisnach; Duisburg (NRW)", "by": true}],
+  "semikron-danfoss-elektronik-gmbh-co-kg": [
+   {"p": "ME/CT", "y": 2023, "ent": "SEMIKRON Elektronik GmbH & Co. KG", "s": "Nürnberg", "by": true},
+   {"p": "ME", "y": 2018, "ent": "SEMIKRON Elektronik GmbH & Co. KG", "s": "Nürnberg", "by": true}],
+  "wacker-chemie-ag": [{"p": "ME/CT", "y": 2023, "ent": "Wacker Chemie AG", "s": "Burghausen", "by": true}],
+  "elmos-semiconductor-se-munchen": [
+   {"p": "ME/CT", "y": 2023, "ent": "Elmos Semiconductor SE", "s": "Bruchsal (BW), Berlin, Frankfurt/Oder (BB), Dortmund (NRW)", "by": false},
+   {"p": "ME", "y": 2018, "ent": "Elmos Semiconductor AG", "s": "Dortmund (NRW)", "by": false}],
+  "trumpf-photonic-components-gmbh-bavaria": [{"p": "ME/CT", "y": 2023, "ent": "TRUMPF Photonic Components GmbH", "s": "Ulm (BW), Aachen (NRW)", "by": false}],
+  "wolfspeed-germany-gmbh-r-d-design": [{"p": "ME/CT", "y": 2023, "ent": "Wolfspeed Germany GmbH", "s": "Ensdorf (Saarland)", "by": false}],
+  "sgl-carbon-se": [{"p": "ME/CT", "y": 2023, "ent": "SGL Carbon GmbH", "s": "Bonn (NRW)", "by": false}],
+  "tdk-micronas-gmbh-vyvojove-centrum-mnich": [{"p": "ME", "y": 2018, "ent": "TDK-Micronas GmbH", "s": "Freiburg (BW)", "by": false}]
+ }
+}
