@@ -232,7 +232,8 @@ T=T.replace(OLD_DRAW,"""    if (l.nolabel) { h += `<circle cx="${d.x.toFixed(1)}
 OLD_END="""  h += '</svg>';
   $('radarSvg').innerHTML = h;"""
 assert OLD_END in T
-T=T.replace(OLD_END,"""  if (nUnl) h += `<text x="10" y="16" font-size="12" fill="#8a94a6" font-family="Inter,sans-serif">${esc(({cs:`Popisky u ${labels.length - nUnl} z ${labels.length} aktivních organizací (priorita: hlavní zprávy, finance, počet zpráv); ostatní body ukážou název po najetí myší`,en:`Labels on ${labels.length - nUnl} of ${labels.length} active organisations (priority: top items, finance, number of items); hover the other dots for the name`,de:`Beschriftung bei ${labels.length - nUnl} von ${labels.length} aktiven Organisationen (Priorität: Top-Meldungen, Finanzen, Anzahl Meldungen); die übrigen Punkte zeigen den Namen beim Überfahren`})[LANG] || '')}</text>`;
+T=T.replace(OLD_END,"""  h += `<text x="12" y="${H - 10}" font-size="14" fill="#8a94a6" font-family="Inter,sans-serif">${esc(({cs:'Najetí myší na bod: poslední zpráva · klik: karta organizace',en:'Hover a dot: latest item · click: organisation card',de:'Mauszeiger auf einen Punkt: letzte Meldung · Klick: Organisationskarte'})[LANG])}</text>`;
+  if (nUnl) h += `<text x="10" y="16" font-size="12" fill="#8a94a6" font-family="Inter,sans-serif">${esc(({cs:`Popisky u ${labels.length - nUnl} z ${labels.length} aktivních organizací (priorita: hlavní zprávy, finance, počet zpráv); ostatní body ukážou název po najetí myší`,en:`Labels on ${labels.length - nUnl} of ${labels.length} active organisations (priority: top items, finance, number of items); hover the other dots for the name`,de:`Beschriftung bei ${labels.length - nUnl} von ${labels.length} aktiven Organisationen (Priorität: Top-Meldungen, Finanzen, Anzahl Meldungen); die übrigen Punkte zeigen den Namen beim Überfahren`})[LANG] || '')}</text>`;
   h += '</svg>';
   $('radarSvg').innerHTML = h;""",1)
 # ---- search covers the map ----
